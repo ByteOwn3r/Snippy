@@ -3,3 +3,6 @@
 .venv
 dictionary.json
 Variables.py
+__pycache__/
+text.log
+text_error.log

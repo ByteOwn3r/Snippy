@@ -1,8 +1,12 @@
 <a id="readme-top"></a>
 
-![Python](https://img.shields.io/badge/Language-Python_3.11+-blue?logo=python&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Cross--platform-blue)
-![Status](https://img.shields.io/badge/Status-In_Development-green)
+<div align="center">
+<img src="https://img.shields.io/badge/Language-Python_3.11+-blue?logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/Platform-Cross--platform-blue">
+<img src="https://img.shields.io/badge/Status-In_Development-green">
+</div>
+
+![gif](demo.gif)
 
 <br />
 <div align="center">
