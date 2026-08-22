@@ -1,10 +1,14 @@
-import json,sys
+import json, sys
 import subprocess
+import threading
+import queue
+import tkinter as tk
 from typing import Any
 from pynput import keyboard
 from pynput.keyboard import Key, Controller
 from datetime import datetime
 import Variables
+import gui
 
 buffer = ""
 kb = Controller()
@@ -13,6 +17,8 @@ data: Any = {}
 expanding = False
 EMAILS = Variables.EMAILS
 PATH = Variables.PATH
+
+gui_queue = queue.Queue()
 
 
 def reload():
@@ -25,7 +31,7 @@ def type_text(text):
     kb.press(key.space)
     kb.release(key.space)
 
-def remove_key(length:int):
+def remove_key(length: int):
     for _ in range(length):
         kb.press(Key.backspace)
         kb.release(Key.backspace)
@@ -73,7 +79,7 @@ def check_exceptions(key_word, type_, arg=None):
         sys.exit(0)
     if arg:
         if type_ == "open":
-            subprocess.run(["open", "-a" ,arg])
+            subprocess.run(["open", "-a", arg])
             expanding = False
             return True
     if type_ == "command":
@@ -81,10 +87,7 @@ def check_exceptions(key_word, type_, arg=None):
         expanding = False
         return True
     if type_ == "help":
-        commands = ""
-        for i in data:
-            commands += i+"\n"
-        type_text(commands)
+        gui_queue.put("show_help")
         expanding = False
         return True
     if type_ == "reload":
@@ -114,7 +117,26 @@ def check_word():
         expanding = False
         return
 
-reload()
-listener = keyboard.Listener(on_press=on_press)
-listener.start()
-listener.join()
+def start_listener():
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
+    listener.join()
+
+def check_gui_queue(root):
+    try:
+        while True:
+            gui_queue.get_nowait()
+            gui.help()
+    except queue.Empty:
+        pass
+    root.after(200, check_gui_queue, root)
+
+if __name__ == "__main__":
+    reload()
+    listener_thread = threading.Thread(target=start_listener, daemon=True)
+    listener_thread.start()
+
+    root = tk.Tk()
+    root.withdraw()  # ventana raiz oculta, solo sirve para mantener el mainloop vivo
+    check_gui_queue(root)
+    root.mainloop()
